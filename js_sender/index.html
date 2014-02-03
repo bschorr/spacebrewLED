@@ -1,0 +1,165 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+	<title>Spacebrew Sliders (Range Example)</title> 
+	<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+	<script type="text/javascript" src="js/sb-1.3.0.js"></script>
+
+    <script type="text/javascript">
+
+    	// when page loads call spacebrew setup function 
+		$(window).on("load", setupSpacebrew);
+
+		// wher the jquery mobile is ready to initialize the UI call the setUI function 
+		$(document).bind("pageinit", setupUI);
+
+		// Spacebrew Object
+		var sb, 
+			app_name = " Dimmer ",
+			values = {} ;
+
+		var bIsOn;
+
+		/**
+		 * setupSpacebrew Function that creates and configures the connection to the Spacebrew server.
+		 * 				  It is called when the page loads.
+		 */
+		function setupSpacebrew (){
+			bIsOn = true;
+			console.log(bIsOn);
+
+			app_name = app_name;
+
+			console.log("Setting up spacebrew connection");
+			sb = new Spacebrew.Client({reconnect:true});
+
+			sb.name(app_name);
+			sb.description("Sliders for sending and displaying SpaceBrew range messages.");
+
+			// configure the publication and subscription feeds
+			sb.addPublish("slider1", "range", "500");
+			sb.addPublish("slider2", "range", "500");
+			sb.addSubscribe("slider1", "range");
+			sb.addSubscribe("slider2", "range");
+			sb.addPublish( "buttonPress", "boolean", "false" );
+			sb.addSubscribe( "toggleBackground", "boolean" );
+
+			// override Spacebrew events - this is how you catch events coming from Spacebrew
+			sb.onBooleanMessage = onBooleanMessage;
+			sb.onRangeMessage = onRangeMessage;
+			sb.onOpen = onOpen;
+
+			// connect to spacbrew
+			sb.connect();
+
+			// listen to the mouse 
+			$("#buttonMsg").on("mousedown", onButtonPress);
+			$("#buttonMsg").on("mouseup", onButtonRelease);
+		};
+
+		/**
+		 * Function that is called when Spacebrew connection is established
+		 */
+		function onOpen() {
+			var message = "Connected as <strong>" + sb.name() + "</strong>. ";
+			if (sb.name() === app_name) {
+				message += "<br>You can customize this app's name in the query string by adding <strong>name=your_app_name</strong>."
+			}
+			$("#name").html( message );
+		}
+
+
+		/**
+		 * setupUI Function that create the event listeners for the sliders. It creates an callback
+		 * 		   function that sends a spacebrew message whenever an slide event is received.
+		 */
+		function setupUI() {
+			console.log("Setting up the UI listeners");
+			// when the slider state changes it sends a message to spacebrew
+			$(".slider").bind( "change", function(event, ui) {
+				if (values[event.target.id] != event.target.value) {
+					sb.send(event.target.id, "range", event.target.value);
+					values[event.target.id] = event.target.value;
+				}
+			});
+		}
+
+		/**
+		 * onRangeMessage Function that is called whenever new spacebrew range messages are received.
+		 * 				  It accepts two parameters:
+		 * @param  {String} name  	Holds name of the subscription feed channel
+		 * @param  {Integer} value 	Holds value received from the subscription feed
+		 */
+		function onRangeMessage(name, value){
+			console.log("Received new range message ", value);
+			$("#"+name).slider('refresh', value);
+		};
+
+
+		function onButtonPress (evt){
+			console.log("[onButtonPress] button has been pressed"); 
+	        // sb.send("buttonPress", "boolean", "true");
+		}
+
+		function onButtonRelease (evt){
+			bIsOn = !bIsOn;
+			console.log("[onButtonRelease] button has been released"); 
+			
+			if (bIsOn)  {
+				sb.send("buttonPress", "boolean", "false");
+			} else {
+				sb.send("buttonPress", "boolean", "true");
+			}
+
+		}
+
+
+
+		function onBooleanMessage( name, value ){
+			console.log("[onBooleanMessage] boolean message received ", value);
+			var buttonMsg = document.getElementById('buttonMsg');
+			if (value) {
+				// buttonMsg.innerHTML = 'on';
+				buttonMsg.style.marginLeft = 50+'%';
+			} else {
+				// buttonMsg.innerHTML = 'off';
+				buttonMsg.style.marginLeft = 0+'%';
+
+			}
+		}
+
+    </script>
+
+</head> 
+<body> 
+
+<div data-role="page">
+	<div id="myBtn">
+		<p>ON</p>
+		<p>OFF</p>
+	</div>
+	<a class="button" id="buttonMsg"></a>
+	<div id="range"></div>
+	<div id="mask"></div>
+
+	<div data-role="content">	
+		<form id="defaults">
+			<label for="slider1">Input Slider 1:</label>
+			<input type="range" class="slider" name="slider" id="slider1" value="500" min="0" max="1023"  />
+		</form>
+
+		</br></br>
+		<div id="name">Trying to connect</div>
+
+	</div><!-- /content -->
+</div><!-- /page -->
+
+
+</body>
+</html>
