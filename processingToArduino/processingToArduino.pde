@@ -9,7 +9,7 @@ import processing.serial.*;
 
 //setting up server, name and description for spacebrew connection
 String server="sandbox.spacebrew.cc";
-String name="AwesomeGusBernardoProject";
+String name="ProcessingToArduino";
 String description ="Range to LEDs";
 
 //values in the arduino are 2 to 11 in this case. 
