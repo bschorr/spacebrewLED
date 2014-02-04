@@ -5,7 +5,8 @@ boolean bIsOn; //to know if the LEDs are on or off
 int noButtonState;
 int yesButtonState;
 
-boolean bWillWait;;
+boolean bWillWait;
+boolean firstRead = false;
 
 void setup() {
   
@@ -69,14 +70,15 @@ void loop() {
 
   if (noButtonState == HIGH) {
     bWillWait = false;
+    firstRead = true;
   }
   
   if (yesButtonState == HIGH) {
     bWillWait = true;
+    firstRead = true;
   }
   
-  Serial.println(bWillWait);
-  //Serial.println("y");
+  if (firstRead) Serial.println(bWillWait);
   
 }
 

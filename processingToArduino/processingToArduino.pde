@@ -35,7 +35,6 @@ void setup() {
 
   // adding the range and the on/off button
   sb.addSubscribe( "remote_LEDs", "range" );
-  sb.addSubscribe( "Blink", "boolean" );  
 
   // connect!
   sb.connect("ws://"+server+":9000", name, description );
@@ -87,9 +86,8 @@ void serialEvent (Serial myPort) {
   inString = trim(inString);
   int myInt = Integer.parseInt(inString);
   isWaiting = boolean(myInt);
-  
   println (isWaiting);
   
-  sb.send("isWaiting", isWaiting);
+  if (millis()%1000 < 10) sb.send("isWaiting", isWaiting);
 }
 
