@@ -17,7 +17,11 @@ String description ="Range to LEDs";
 int sendValueToArduino = 2;
 
 Spacebrew sb; //our spacebrew object
-Serial myPort; //the serial port 
+Serial myPort; //the serial port
+
+boolean isWaiting;
+
+color myColor;
 
 void setup() {
 
@@ -26,6 +30,8 @@ void setup() {
   size(50, 50);
 
   sb = new Spacebrew( this );
+
+  sb.addPublish( "isWaiting", isWaiting ); 
 
   // adding the range and the on/off button
   sb.addSubscribe( "remote_LEDs", "range" );
@@ -51,6 +57,8 @@ void setup() {
 }
 
 void draw() {
+  
+  background (myColor);
 //Nothing done here!
 //see description at the top.
 }
@@ -71,5 +79,17 @@ void onRangeMessage( String name, int value ) {
 void onBooleanMessage( String name, boolean value ) {
   println("got boolean message" + name + " : " + value);
   myPort.write(int(value));
+}
+
+void serialEvent (Serial myPort) {
+  // get the ASCII string:
+  String inString = new String(myPort.readBytesUntil('\n'));
+  inString = trim(inString);
+  int myInt = Integer.parseInt(inString);
+  isWaiting = boolean(myInt);
+  
+  println (isWaiting);
+  
+  sb.send("isWaiting", isWaiting);
 }
 

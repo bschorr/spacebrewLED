@@ -48,6 +48,7 @@
 			sb.addSubscribe("slider1", "range");
 			sb.addSubscribe("slider2", "range");
 			sb.addPublish( "buttonPress", "boolean", "false" );
+
 			sb.addSubscribe( "toggleBackground", "boolean" );
 
 			// override Spacebrew events - this is how you catch events coming from Spacebrew
@@ -123,15 +124,21 @@
 
 		function onBooleanMessage( name, value ){
 			console.log("[onBooleanMessage] boolean message received ", value);
+
+			var div = document.getElementById( 'range' );
+
 			var buttonMsg = document.getElementById('buttonMsg');
 			if (value) {
 				// buttonMsg.innerHTML = 'on';
-				buttonMsg.style.marginLeft = 50+'%';
+				div.style.background = "#FF0000"
 			} else {
 				// buttonMsg.innerHTML = 'off';
-				buttonMsg.style.marginLeft = 0+'%';
+				div.style.background = "#00FF00"
 
 			}
+
+
+
 		}
 
     </script>
@@ -140,11 +147,11 @@
 <body> 
 
 <div data-role="page">
-	<div id="myBtn">
+	<!-- <div id="myBtn">
 		<p>ON</p>
 		<p>OFF</p>
 	</div>
-	<a class="button" id="buttonMsg"></a>
+	<a class="button" id="buttonMsg"></a> -->
 	<div id="range"></div>
 	<div id="mask"></div>
 

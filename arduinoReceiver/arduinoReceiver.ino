@@ -2,17 +2,25 @@ int incomingByte;  //a variable to read incoming serial data
 int recordedRange; //a variable to record the last range received
 boolean bIsOn; //to know if the LEDs are on or off
 
+int noButtonState;
+int yesButtonState;
+
+boolean bWillWait;;
+
 void setup() {
   
   //initiate serial communication:
   Serial.begin(9600);
-  Serial.println(F("starting up"));
+  //Serial.println(F("starting up"));
 
   //set the digital pins to which the LEDs are connected to OUTPUT
   for (int i = 2; i <= 11; i++) {
     pinMode (i, OUTPUT);
     digitalWrite(i, LOW);
   }
+  
+  pinMode (12, INPUT);
+  pinMode (13, INPUT);
 
   //start with the LEDs on
   bIsOn = true;
@@ -54,7 +62,22 @@ void loop() {
 
     //read all the bytes in the serial buffer
     while (Serial.available()) incomingByte = Serial.read();
-  }                       
+  }
+  
+  noButtonState = digitalRead(12);
+  yesButtonState = digitalRead(13);
+
+  if (noButtonState == HIGH) {
+    bWillWait = false;
+  }
+  
+  if (yesButtonState == HIGH) {
+    bWillWait = true;
+  }
+  
+  Serial.println(bWillWait);
+  //Serial.println("y");
+  
 }
 
 

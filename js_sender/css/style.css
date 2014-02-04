@@ -57,7 +57,7 @@ a, a:link, a:visited { text-decoration: none; }
    height: 100%;
    background: lime;
    position: absolute;
-   margin-top: 60px;
+   
    background: #bbf400; /* Old browsers */
    background: -moz-linear-gradient(top,  #bbf400 0%, #ffff30 48%, #f42e27 100%); /* FF3.6+ */
    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#bbf400), color-stop(48%,#ffff30), color-stop(100%,#f42e27)); /* Chrome,Safari4+ */
